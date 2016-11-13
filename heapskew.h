@@ -27,6 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if !defined(HeapSkewH)
 #define HeapSkewH
 
+#include <stddef.h> // for NULL
+#include <stdint.h> // for uint8_t
+
 //#include "gen.hxx"
 #define assert(x) 
 
@@ -114,7 +117,7 @@ template<class T> void HeapSkew<T>::merge (HeapSkew& h)
 
 template<class T> T* HeapSkew<T>::merge (T* a, T* b)
   {
-  byte SizeCtr=0;
+  uint8_t SizeCtr=0;
   T *Ret;
   DepthLastOp = 0;
   if (a==0) return b;

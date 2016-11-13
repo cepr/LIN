@@ -22,14 +22,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef ABSTRACTLIN_H
+#define ABSTRACTLIN_H
 
-//typedef unsigned char uint8_t;
-//typedef unsigned int uint16_t;
 #include <inttypes.h>
-#include "Arduino.h"
-#include <HardwareSerial.h>
 
-#define LIN_SERIAL            HardwareSerial
 #define LIN_BREAK_DURATION    15    // Number of bits in the break.
 #define LIN_TIMEOUT_IN_FRAMES 2     // Wait this many max frame times before declaring a read timeout.
 
@@ -91,10 +88,21 @@ public:
 #endif
 
 
-class Lin
+class AbstractLin
 {
 protected:
-  void serialBreak(void);
+  // Abstract UART methods
+  virtual void serialFlush(void) = 0;
+  virtual void serialBreak(void) = 0;
+  virtual void serialWrite(uint8_t b) = 0;
+  virtual void serialWrite(const uint8_t* data, uint8_t length) = 0;
+  virtual size_t serialAvailable(void) = 0;
+  virtual uint8_t serialRead(void) = 0;
+  virtual void enableTx(void) = 0;
+  virtual void disableTx(void) = 0;
+  // Abstract timer methods
+  virtual uint32_t millis() = 0;
+
   // For Lin 1.X "start" should = 0, for Lin 2.X "start" should be the addr byte. 
   static uint8_t dataChecksum(const uint8_t* message, char nBytes,uint16_t start=0);
   static uint8_t addrParity(uint8_t addr);
@@ -102,13 +110,9 @@ protected:
   HeapSkew<LinScheduleEntry> scheduler;
 
 public:
-  Lin(LIN_SERIAL& ser=Serial,uint8_t txPin=1);
-  LIN_SERIAL& serial;
-  uint8_t txPin;               //  what pin # is used to transmit (needed to generate the BREAK signal)
   int     serialSpd;           //  in bits/sec. Also called baud rate
-  uint8_t serialOn;            //  whether the serial port is "begin"ed or "end"ed.  Optimization so we don't begin twice.
   unsigned long int timeout;   //  How long to wait for a slave to fully transmit when doing a "read".  You can modify this after calling "begin"
-  void begin(int speed);
+  virtual void begin(int speed);
 
   // Send a message right now, ignoring the schedule table.
   void send(uint8_t addr, const uint8_t* message,uint8_t nBytes,uint8_t proto=2);
@@ -124,3 +128,5 @@ public:
   void loop();
 
 };
+
+#endif /* ABSTRACTLIN_H */

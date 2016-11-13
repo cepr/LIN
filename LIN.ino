@@ -30,9 +30,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "Arduino.h"
-#include "lin.h"
+#include "arduinolin.h"
 
-Lin lin;
+ArduinoLin lin;
 
 #ifndef SIM
 #define simprt p
